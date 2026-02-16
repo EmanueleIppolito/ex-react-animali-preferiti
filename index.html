@@ -11,18 +11,50 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
         const { useState } = React;
+
+        function Modal({
+            title,
+            content,
+            show = false,
+            onClose = () => { },
+            onConfirm = () => { }
+        }) {
+            return show && ReactDOM.createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        <h2>{title}</h2>
+                        <p>{content}</p>
+                        <button onClick={onConfirm}>Conferma</button>
+                        <button onClick={onClose}>Annulla</button>
+                    </div>
+                </div>,
+                document.body
+            )
+        }
         const ReactApp = () => {
 
             const [animals, setAnimals] = useState([]);
-            const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
+            const [showModal, setShowModal] = useState(false);
+            const [inputValue, setInputValue] = useState("");
             const aggiungiAnimale = () => {
-                const random = Math.floor(Math.random() * animalsChoices.length);
-                const animaleCasuale = animalsChoices[random]
-                setAnimals(nuovoAnimale => [...nuovoAnimale, animaleCasuale])
+
             }
             return (
                 <>
-                    <button type="button" onClick={aggiungiAnimale}>Aggiungi animale</button>
+                    <button type="button" onClick={() => setShowModal(true)}>Aggiungi animale</button>
+                    <Modal
+                        title="Nuovo animale"
+                        content={<input
+                            type="text"
+                            value={inputValue}
+                            onChange={e => setInputValue(e.target.value)} />}
+                        show={showModal}
+                        onConfirm={() => {
+                            setAnimals(prev => [...prev, inputValue]);
+                            setShowModal(false);
+                            setInputValue("");
+                        }}
+                        onClose={() => setShowModal(false)} />
                     <details>
                         <summary>I miei animali preferiti </summary>
                         <ul>
